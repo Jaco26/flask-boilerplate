@@ -1,6 +1,6 @@
 from flask import Flask, render_template
-
-from .database.db import db
+from .database import db
+from .blueprints import auth_bp
 from .util import ExtendedJSONEncoder, ErrorHandler, jwt
 
 def create_app(config=None):
@@ -18,6 +18,8 @@ def create_app(config=None):
   db.init_app(app)
   jwt.init_app(app)
   error_handler.init_app(app)
+
+  app.register_blueprint(auth_bp, url_prefix='/api/auth')
 
   @app.route('/')
   def index():

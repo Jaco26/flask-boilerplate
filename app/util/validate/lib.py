@@ -1,7 +1,12 @@
 import uuid
+from flask import request
 from voluptuous import *
 
-def json_from(source, template_dict):
+def should_look_like(template_dict, source=None):
+  """If 'source' is not passed, the function will default to request.get_json() for
+  source data"""
+  if not source:
+    source = request.get_json()
   accum = {}
   for key in template_dict:
     predicate = template_dict[key]
