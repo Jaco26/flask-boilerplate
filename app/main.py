@@ -1,4 +1,5 @@
-from flask import Flask
+from flask import Flask, render_template
+
 from .database.db import db
 from .util import ExtendedJSONEncoder, ErrorHandler, jwt
 
@@ -8,6 +9,9 @@ def create_app(config=None):
 
   if config:
     app.config.from_object(config)
+    if config.ENABLE_CORS:
+      from flask_cors import CORS
+      CORS(app)
 
   error_handler = ErrorHandler()
 
@@ -17,6 +21,6 @@ def create_app(config=None):
 
   @app.route('/')
   def index():
-    return '<h1>Welcome to the boilerplate!</h1>'
+    return render_template('index.html')
   
   return app

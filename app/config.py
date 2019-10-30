@@ -1,6 +1,8 @@
 import os
 
 class BaseConfig:
+  ENABLE_CORS = True
+
   JWT_BLACKLIST_ENABLED = True
   JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
   JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY')

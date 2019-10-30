@@ -1,3 +1,4 @@
+
 from app.database.db import db
 
 class RevokedToken(db.Model):
