@@ -33,7 +33,7 @@ To use, you will need to:
       import binascii
       binascii.hexlify(os.urandom(24))
       ```
-    - `DATABASE_URL`: For a postgres backend, it should look like: `postgres://{user}:{password}@{hostname}:{port}/{database_name}
+    - `DATABASE_URL`: For a postgres backend, it should look like: `postgres://{user}:{password}@{hostname}:{port}/{database_name}`
     - (**optional**) Define `FLASK_APP` and `FLASK_ENV` variables here. With `python-dotenv` installed, this should allow you
     to use the flask cli without having to define these variables in the terminal. Mine look like:
       ```
@@ -43,7 +43,12 @@ To use, you will need to:
 - Once the `FLASK_APP` and `DATABASE_URL` environment variables are set, you can (and should) create your database by running:
   ```
   $ flask db init
+
   $ flask db migrate
+
   $ flask db upgrade
+
+  $ flask seed-db
+
   ```
 - Now the `/api/auth/register` and `/api/auth/login` endpoints should work and you'll have to take it from here...

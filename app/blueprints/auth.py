@@ -21,13 +21,8 @@ def make_token(identity, expires_hours, user_profile):
 def user_session():
   id_token = request.cookies.get('id_token')
   if id_token:
-    decoded = decode_token(id_token, allow_expired=True)
-    return jsonify({
-      'expires_at': decoded['exp'] * 1000,
-      'permission': decoded['user_claims']['permission'],
-      'username': decoded['user_claims']['username']
-    })
-  abort(422)
+    return jsonify(id_token)
+  abort(403)
 
 
 @auth_bp.route('/register', methods=['POST'])
@@ -51,8 +46,12 @@ def register():
     user_profile.save_to_db()
 
     id_token = make_token(new_user.id, 1, user_profile)
+
+    res = make_response()
+
+    res.set_cookie('id_token', id_token, httponly=True)
     
-    return jsonify(id_token)
+    return res, 201
   
   return 'Username: "{}" has already been taken'.format(body['username']), 403
 
@@ -73,8 +72,10 @@ def login():
 
     id_token = make_token(user.id, 1, user_profile)
 
-    res = make_response(20)
+    res = make_response()
+
     res.set_cookie('id_token', id_token, httponly=True)
-    return res
+    
+    return res, 201
 
   abort(403)
