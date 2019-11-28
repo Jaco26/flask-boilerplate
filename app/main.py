@@ -1,11 +1,11 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, abort
 from .database import db
 from .blueprints import auth_bp
-from .util import ApiErrorHandler, jwt, extend, commands
+from .util import ApiErrorHandler, ApiResponse, jwt, extended, commands
 
 def create_app(config=None):
-  app = Flask(__name__)
-  app.json_encoder = extend.ApiJSONEncoder
+  app = extended.ApiFlask(__name__)
+  app.json_encoder = extended.ApiJSONEncoder
 
   if config:
     app.config.from_object(config)
@@ -24,6 +24,10 @@ def create_app(config=None):
   @app.after_request
   def after_req(res):
     res.headers['Access-Control-Allow-Credentials'] = 'true'
+    res.headers['Server'] = 'My Butt'
+    res.headers['X-DNS-Prefetch-Control'] = 'off' # https://helmetjs.github.io/docs/dns-prefetch-control/
+    res.headers['X-Frame-Options'] = 'deny' # https://helmetjs.github.io/docs/frameguard/
+    res.headers['X-Content-Type-Options'] = 'nosniff' # https://helmetjs.github.io/docs/dont-sniff-mimetype/
     return res
 
   app.register_blueprint(auth_bp, url_prefix='/api/auth')
@@ -32,4 +36,13 @@ def create_app(config=None):
   def index():
     return render_template('index.html')
   
+  @app.route('/test')
+  def test():
+    res = ApiResponse()
+    res.headers = {
+      'X-Hello': 'World',
+    }
+
+    return res
+
   return app

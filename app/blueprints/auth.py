@@ -2,6 +2,7 @@ from datetime import timedelta
 from flask import Blueprint, jsonify, make_response, request, abort
 from passlib.hash import pbkdf2_sha256
 from app.database.models import RegisteredUser, UserProfile
+from app.util import ApiResponse
 from app.util.validate import should_look_like
 from app.util.jwt_manager import create_access_token, decode_token, jwt_required
 
@@ -19,14 +20,18 @@ def make_token(identity, user_profile, expires_hours=1):
 
 @auth_bp.route('/user-session')
 def user_session():
+  res = ApiResponse()
   id_token = request.cookies.get('id_token')
   if id_token:
-    return jsonify(id_token)
+    res.data = id_token
+    return res
   abort(403)
 
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
+  res = ApiResponse()
+  
   body = should_look_like({
     'username': str,
     'password': str,
@@ -47,11 +52,11 @@ def register():
 
     id_token = make_token(new_user.id, 1, user_profile)
 
-    res = make_response()
-
     res.set_cookie('id_token', id_token, httponly=True)
     
-    return res, 201
+    res.status = 201
+
+    return res
   
   return 'Username: "{}" has already been taken'.format(body['username']), 403
 
@@ -72,9 +77,11 @@ def login():
 
     id_token = make_token(user.id, 1, user_profile)
 
-    res = make_response()
+    res = ApiResponse()
 
     res.set_cookie('id_token', id_token, httponly=True)
+
+    res.status = 201
     
     return res, 201
 
