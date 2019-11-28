@@ -3,12 +3,12 @@ from flask import Blueprint, jsonify, make_response, request, abort
 from passlib.hash import pbkdf2_sha256
 from app.database.models import RegisteredUser, UserProfile
 from app.util.validate import should_look_like
-from app.util.jwt_manager import create_access_token, decode_token
+from app.util.jwt_manager import create_access_token, decode_token, jwt_required
 
 
 auth_bp = Blueprint('auth_bp', __name__)
 
-def make_token(identity, expires_hours, user_profile):
+def make_token(identity, user_profile, expires_hours=1):
   return create_access_token(identity, 
                             expires_delta=timedelta(expires_hours),
                             user_claims={
@@ -79,3 +79,19 @@ def login():
     return res, 201
 
   abort(403)
+
+
+@auth_bp.route('/logout', methods=['POST'])
+@jwt_required
+def logout():
+  token = get_raw_jwt()
+
+  revoked_token = RevokedToken(jti=token.get('jti'))
+
+  revoked_token.save_to_db()
+
+  res = make_response()
+
+  res.set_cookie('id_token', '')
+
+  return res, 200

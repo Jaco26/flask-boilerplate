@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request
 from .database import db
 from .blueprints import auth_bp
-from .util import ExtendedJSONEncoder, ErrorHandler, jwt, commands
+from .util import ApiErrorHandler, jwt, extend, commands
 
 def create_app(config=None):
   app = Flask(__name__)
-  app.json_encoder = ExtendedJSONEncoder
+  app.json_encoder = extend.ApiJSONEncoder
 
   if config:
     app.config.from_object(config)
@@ -13,7 +13,7 @@ def create_app(config=None):
       from flask_cors import CORS
       CORS(app)
 
-  error_handler = ErrorHandler()
+  error_handler = ApiErrorHandler()
 
   db.init_app(app)
   jwt.init_app(app)

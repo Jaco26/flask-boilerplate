@@ -1,7 +1,8 @@
+from datetime import tzinfo, date, timedelta
 from flask.json import JSONEncoder
-from datetime import date, tzinfo, timedelta
 from uuid import UUID
 from app.database.db import db
+
 
 class SimpleUTC(tzinfo):
   def tzname(self, **kwargs):
@@ -11,7 +12,7 @@ class SimpleUTC(tzinfo):
     return timedelta(0)
 
 
-class ExtendedJSONEncoder(JSONEncoder):
+class ApiJSONEncoder(JSONEncoder):
   def default(self, obj):
     if isinstance(obj, date):
       return obj.replace(tzinfo=SimpleUTC()).isoformat()
@@ -21,4 +22,4 @@ class ExtendedJSONEncoder(JSONEncoder):
       return str(obj)
     elif isinstance(obj, db.Model):
       return obj.cols_dict()
-    return JSONEncoder.default(obj)
+    return json.JSONEncoder.default(obj)
