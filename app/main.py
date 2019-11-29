@@ -35,14 +35,5 @@ def create_app(config=None):
   @app.route('/')
   def index():
     return render_template('index.html')
-  
-  @app.route('/test')
-  def test():
-    res = ApiResponse()
-    res.headers = {
-      'X-Hello': 'World',
-    }
-
-    return res
 
   return app

@@ -50,15 +50,19 @@ def register():
 
     user_profile.save_to_db()
 
-    id_token = make_token(new_user.id, 1, user_profile)
+    id_token = make_token(new_user.id, user_profile, expires_hours=1)
 
-    res.set_cookie('id_token', id_token, httponly=True)
+    res.set_cookie('id_token', id_token, httponly=True, secure=True)
     
     res.status = 201
 
     return res
   
-  return 'Username: "{}" has already been taken'.format(body['username']), 403
+  res.message = 'Username: "{}" has already been taken'.format(body['username'])
+
+  res.status = 400
+
+  return res
 
 
 
@@ -75,15 +79,15 @@ def login():
 
     user_profile = UserProfile.query.get(user.id)
 
-    id_token = make_token(user.id, 1, user_profile)
+    id_token = make_token(user.id, user_profile, expires_hours=1)
 
     res = ApiResponse()
 
-    res.set_cookie('id_token', id_token, httponly=True)
+    res.set_cookie('id_token', id_token, httponly=True, secure=True)
 
     res.status = 201
     
-    return res, 201
+    return res
 
   abort(403)
 
