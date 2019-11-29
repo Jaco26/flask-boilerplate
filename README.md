@@ -6,11 +6,26 @@ To use, you will need to:
 - Download the zip of this repository and copy the contents into your project directory
 - Run `pip install -r requirements.txt`
 - In the root of your project
-  - Remove 
+  - Create a `.gitignore` file with the following content:
   ```
-  migrations/
+  .env
+  .vscode
+
+  venv/
+
+  *.pyc
+  __pycache__/
+
+  instance/
+
+  .pytest_cache/
+  .coverage
+  htmlcov/
+
+  dist/
+  build/
+  *.egg-info/
   ```
-  from the `.gitignore` file. It's included to prevent migrations from being pushed during development.
   - Create a `.env` file and define the following variables
     - `JWT_SECRET_KEY`: You need to keep this super duper secret and you'll want to change it on a regular basis if your app is in production and handling user passwords or any other remotely sensitive data. You can generate it with something like:
       ```
